@@ -1,3 +1,8 @@
+var fs = require('browserify-fs');
+var Path = require('path');
+var fss = require('fs');
+const Axios = require('axios');
+
 class Nationcode {
     constructor() {
         this.list = [];
@@ -6,7 +11,7 @@ class Nationcode {
         this.aTag = $(".wikitable").find('tbody>tr>td>span>a');
         this.init();
         this.getFlagImageFile();
-        // this.country;
+        this.count = 0;
     }
     init() {
             // this.getCountryByCode("AF");
@@ -30,10 +35,6 @@ class Nationcode {
         }
         // 1. 국가 코드로 국가 명을 가져오는 함수
     getCountryByCode(code) {
-        // var $except = $(".wikitable").find('tbody>tr>td>span').parent();
-        // var table = $(".wikitable").find('tbody>tr>td').not($except).find(function(d, i) {
-        //     return d;
-        // })
         var _this = this;
         $(".wikitable>tbody>tr>td").each(function(i, d) {
             // return (d.textContent === code) ? 
@@ -56,16 +57,47 @@ class Nationcode {
             return this.list.map(function(d) { return d.country })
         }
         // 4. 외부 사이트에 연결된 국기 이미지를 로컬의 flag 폴더로 가져온다.
+
     getFlagImageFile() {
-            //이부분다시!!!
-            /* var _this = this;
-            this.aTag.each(function(i, d) {
-                $(d).attr({
-                    href: _this.list[i].url,
-                    download: true
+        var _this = this;
+        this.list.forEach(function(c) {
+            _this.toDataURL(c.url, function(dataUrl, url) {
+                var aTagData = [];
+                _this.aTag.each(function(i, d) {
+                    if ($(d).children().attr('src') === url.substr(5)) {
+                        _this.list[i].Base64 = dataUrl.replace(/^data:image\/png;base64,/, '');
+                        aTagData.push(d);
+                    } else {
+                        return 0;
+                    }
+                })
+
+                aTagData.forEach(function(d) {
+                    var fileName = $(d).children().attr('alt');
+                    $(d).attr('href', dataUrl).attr('download', fileName.replace(/\s/gi, '_') + ".png");
                 });
-            }); */
-            // $('a').get
+            });
+        });
+    }
+    getImageBase64() {
+            // data = data.replace(/^data:image\/png;base64,/, '');
+            // __dirname = path.resolve();
+            var _this = this;
+            setInterval(function() {
+                fs.writeFile('count' + _this.count + '.png', _this.list[_this.count].Base64, 'base64', function(err) {
+                    if (err) throw err;
+                    // _this.count++;
+                });
+                _this.count++;
+            }, 2000);
+            // fs.writeFile('test' + _this.count + '.png', _this.list[_this.count].Base64, 'base64', function(err) {
+            //     if (err) throw err;
+            //     // _this.count++;
+            // });
+            // fs.readFile('/test.png', 'utf-8', function(err, data) {
+            //     if (err) throw err;
+            //     console.log(data);
+            // });
         }
         // 5. 국가 코드 또는 국가 명으로 국기 이미지 링크 ( url ) 정보를 가져온다.
     getFlagImageLink() {
@@ -76,6 +108,53 @@ class Nationcode {
             return this.list;
         }
         // 6. 국가 코드, 국가 명, 국기 이미지( url ) 정보를 객체형태로 서비스 하는 함수
+    toDataURL(url, callback) {
+        var xhr = new XMLHttpRequest();
+        xhr.onload = function() {
+            var reader = new FileReader();
+            reader.onloadend = function() {
+                callback(reader.result, url);
+            }
+            reader.readAsDataURL(xhr.response);
+        };
+        xhr.open('GET', url);
+        xhr.responseType = 'blob';
+        xhr.send();
+    }
+
+    test() {
+        var _this = this;
+        setInterval(function() {
+            $(_this.aTag[_this.count]).get(0).click();
+            _this.count++;
+        }, 2000);
+    }
+    testFscount() {
+        fs.readdir('/', (err, files) => {
+            console.log(files);
+        });
+    }
+
+    /* async downloadImage() {
+        const url = 'https://unsplash.com/photos/AaEQmoufHLk/download?force=true';
+        const path = Path.resolve(__dirname, 'pngColl', 'code.jpg');
+        const writer = fs.createWriteStream(path);
+        try {
+            const response = await Axios({
+                url,
+                method: 'GET',
+                responseType: 'stream'
+            })
+            response.data.pipe(writer)
+            return new Promise((resolve, reject) => {
+                writer.on('finish', resolve)
+                writer.on('error', reject)
+            })
+        } catch (error) {
+
+        }
+    } */
+
 }
 
-// global.Nationcode = Nationcode;
+global.Nationcode = Nationcode;

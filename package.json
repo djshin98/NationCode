@@ -1,0 +1,25 @@
+{
+  "name": "nationcode",
+  "version": "1.0.0",
+  "description": "",
+  "main": "jquery.min.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/djshin98/NationCode.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/djshin98/NationCode/issues"
+  },
+  "homepage": "https://github.com/djshin98/NationCode#readme",
+  "dependencies": {
+    "axios": "^0.19.2",
+    "browserify": "^16.5.1",
+    "browserify-fs": "^1.0.0",
+    "fs": "0.0.1-security"
+  }
+}
