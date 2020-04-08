@@ -1,7 +1,4 @@
 var fs = require('browserify-fs');
-var Path = require('path');
-var fss = require('fs');
-const Axios = require('axios');
 
 class Nationcode {
     constructor() {
@@ -23,14 +20,6 @@ class Nationcode {
                 obj.code = _this.table.prevObject[i].innerText.trim();
                 obj.url = $(d).find('span>a>img')[0].src;
                 _this.list.push(obj);
-                // $('a').get(0).click();
-                // return (d.textContent === code) ? 
-                // if (d.innerText === code) {
-                //     _this.country = $(d).next()[0].innerText;
-                // } else {
-                //     return 0;
-                // }
-                // _this.obj.country = $(d).next()[0].innerText;
             });
         }
         // 1. 국가 코드로 국가 명을 가져오는 함수
@@ -71,7 +60,6 @@ class Nationcode {
                         return 0;
                     }
                 })
-
                 aTagData.forEach(function(d) {
                     var fileName = $(d).children().attr('alt');
                     $(d).attr('href', dataUrl).attr('download', fileName.replace(/\s/gi, '_') + ".png");
@@ -90,14 +78,6 @@ class Nationcode {
                 });
                 _this.count++;
             }, 2000);
-            // fs.writeFile('test' + _this.count + '.png', _this.list[_this.count].Base64, 'base64', function(err) {
-            //     if (err) throw err;
-            //     // _this.count++;
-            // });
-            // fs.readFile('/test.png', 'utf-8', function(err, data) {
-            //     if (err) throw err;
-            //     console.log(data);
-            // });
         }
         // 5. 국가 코드 또는 국가 명으로 국기 이미지 링크 ( url ) 정보를 가져온다.
     getFlagImageLink() {
@@ -122,7 +102,7 @@ class Nationcode {
         xhr.send();
     }
 
-    test() {
+    imgDownload() {
         var _this = this;
         setInterval(function() {
             $(_this.aTag[_this.count]).get(0).click();
