@@ -1,4 +1,5 @@
-var fs = require('browserify-fs');
+// fs 사용해서 넣고싶으면 ...
+// var fs = require('browserify-fs');
 
 class Nationcode {
     constructor() {
