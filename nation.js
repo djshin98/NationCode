@@ -8,7 +8,7 @@ class Nationcode {
         this.table = $(".wikitable").find('tbody>tr>td').not(this.$except).find();
         this.aTag = $(".wikitable").find('tbody>tr>td>span>a');
         this.init();
-        this.getFlagImageFile();
+        this.timer;
         this.count = 0;
     }
     init() {
@@ -22,19 +22,24 @@ class Nationcode {
                 obj.url = $(d).find('span>a>img')[0].src;
                 _this.list.push(obj);
             });
+            this.getFlagImageFile();
         }
         // 1. 국가 코드로 국가 명을 가져오는 함수
     getCountryByCode(code) {
-        var _this = this;
-        $(".wikitable>tbody>tr>td").each(function(i, d) {
-            // return (d.textContent === code) ? 
-            if (d.innerText === code) {
-                _this.country = $(d).next()[0].innerText;
-            } else {
-                return 0;
-            }
-        })
-        return _this.country.trim();
+        if (code !== undefined) {
+            var _this = this;
+            $(".wikitable>tbody>tr>td").each(function(i, d) {
+                // return (d.textContent === code) ? 
+                if (d.innerText === code) {
+                    _this.country = $(d).next()[0].innerText;
+                    return _this.country.trim();
+                } else {
+                    return 0;
+                }
+            })
+        } else {
+            return console.log("code를 파라미터로 넣어주세요");
+        }
     }
 
     // 2. 국가 코드 목록을 가져오는 함수
@@ -81,8 +86,15 @@ class Nationcode {
             }, 2000);
         }
         // 5. 국가 코드 또는 국가 명으로 국기 이미지 링크 ( url ) 정보를 가져온다.
-    getFlagImageLink() {
-        return this.list.map(function(d) { return d.url })
+    getFlagImageLink(param) {
+        if (param !== undefined) {
+            var result = nation.list.filter(function(d) {
+                return (d.country === param || d.code === param);
+            });
+            return result.map(function(d) { return d.url });
+        } else {
+            return console.log(" 파라미터를 넣어주세요");
+        }
     }
 
     getFlagObj() {
@@ -105,37 +117,41 @@ class Nationcode {
 
     imgDownload() {
         var _this = this;
-        setInterval(function() {
+        this.count = 0;
+
+        this.timer = setInterval(function() {
             $(_this.aTag[_this.count]).get(0).click();
             _this.count++;
+            if (_this.count === 248) {
+                clearInterval(_this.timer);
+            }
         }, 2000);
     }
     testFscount() {
-        fs.readdir('/', (err, files) => {
-            console.log(files);
-        });
-    }
-
-    /* async downloadImage() {
-        const url = 'https://unsplash.com/photos/AaEQmoufHLk/download?force=true';
-        const path = Path.resolve(__dirname, 'pngColl', 'code.jpg');
-        const writer = fs.createWriteStream(path);
-        try {
-            const response = await Axios({
-                url,
-                method: 'GET',
-                responseType: 'stream'
-            })
-            response.data.pipe(writer)
-            return new Promise((resolve, reject) => {
-                writer.on('finish', resolve)
-                writer.on('error', reject)
-            })
-        } catch (error) {
-
+            fs.readdir('/', (err, files) => {
+                console.log(files);
+            });
         }
-    } */
+        /* async downloadImage() {
+            const url = 'https://unsplash.com/photos/AaEQmoufHLk/download?force=true';
+            const path = Path.resolve(__dirname, 'pngColl', 'code.jpg');
+            const writer = fs.createWriteStream(path);
+            try {
+                const response = await Axios({
+                    url,
+                    method: 'GET',
+                    responseType: 'stream'
+                })
+                response.data.pipe(writer)
+                return new Promise((resolve, reject) => {
+                    writer.on('finish', resolve)
+                    writer.on('error', reject)
+                })
+            } catch (error) {
+
+            }
+        } */
 
 }
 
-global.Nationcode = Nationcode;
+// global.Nationcode = Nationcode;
